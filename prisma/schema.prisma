@@ -1,0 +1,71 @@
+// Local development uses SQLite. On Render, scripts/set-db-provider.mjs
+// switches the provider to postgresql before `prisma generate` runs.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Institution {
+  id                String        @id @default(cuid())
+  slug              String        @unique // "moi-girls-eldoret"
+  name              String // "Moi Girls High School, Eldoret"
+  type              String // "SCHOOL" | "HOSPITAL"
+  county            String
+  paypalEmail       String // sandbox business account (payout receiver)
+  officialPaybill   String? // M-Pesa paybill printed on genuine invoices
+  officialAccountNo String? // bank account printed on genuine invoices
+  verified          Boolean       @default(true)
+  feeSchedules      FeeSchedule[]
+  payments          Payment[]
+}
+
+// Typical fees, used for amount anomaly checks.
+model FeeSchedule {
+  id            String      @id @default(cuid())
+  institutionId String
+  institution   Institution @relation(fields: [institutionId], references: [id])
+  level         String // "Form 1".."Form 4", or "Outpatient", etc.
+  term          String // "2026-T1", "2026-T2", "2026-T3"
+  amountKes     Int
+
+  @@unique([institutionId, level, term])
+}
+
+model Payment {
+  id               String       @id @default(cuid())
+  reference        String       @unique // human-friendly, e.g. "LM-7K3Q9"
+  institutionId    String?
+  institution      Institution? @relation(fields: [institutionId], references: [id])
+  beneficiaryName  String // student/patient
+  beneficiaryRef   String? // admission no. / patient no.
+  level            String?
+  term             String?
+  amountKes        Int
+  amountUsd        Decimal // what the sender pays (fee + service fee)
+  fxRate           Decimal // KES per USD used
+  verdict          String // "APPROVE" | "FLAG" | "BLOCK"
+  verdictReasons   Json // string[]
+  extraction       Json // raw AI extraction
+  invoiceImagePath String
+  senderName       String?
+  senderEmail      String?
+  familyName       String?
+  familyPhone      String?
+  paypalOrderId    String?
+  paypalCaptureId  String?
+  payoutBatchId    String?
+  payoutItemId     String?
+  status           String       @default("DRAFT") // DRAFT|VERIFIED|PAID|PAYOUT_PENDING|SETTLED|FAILED|BLOCKED
+  receiptEn        String?
+  receiptSw        String?
+  settledAt        DateTime?
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  @@index([institutionId, beneficiaryRef, term])
+}
