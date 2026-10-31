@@ -18,3 +18,13 @@ Short log of choices not dictated by the original plan.
 - Hospital fee schedules are per service (Outpatient, Maternity, Inpatient, Surgery) with term `ANY`.
 - Seed history is in 2026-T3 (the current term at demo time). It includes a SETTLED payment (`LM-H7K2P`, Mercy Jepkoech, Adm 3187) that the duplicate sample invoice will collide with, plus FLAG, FAILED, BLOCKED and PAYOUT_PENDING rows for the dashboard.
 - Payout receivers default to `<slug>@business.example.com`; `PAYOUT_EMAIL_<SLUG>` overrides any of them with a real sandbox business account.
+
+## 2026-10-31 — One `POST /api/payments` route instead of `/api/extract` + `/api/verify`
+- Upload, extraction, rule checks, AI review and pricing run in one request (`lib/payments.ts`), and the result is stored as a Payment (`VERIFIED` or `BLOCKED`). This keeps the client simple and means a verdict can never be computed without being saved.
+- The route accepts `sample=genuine|doctored|blurry|duplicate` so `/demo` can run the real flow on the bundled sample invoices.
+- Upload type is detected from the file's bytes, not the browser's MIME type.
+- `Payment.verdictReasons` stores `{ summary, findings[], concerns[] }` (rule findings with severity, plus the AI's summary and extra concerns). Seeded rows still use a plain string list; `readVerdictDetails()` reads both.
+
+## 2026-10-31 — AI review can raise, never lower
+- `lib/ai/explain.ts` adds a short summary and extra concerns. Any concern lifts APPROVE to FLAG; nothing lowers a verdict. If the call fails, the rule findings are shown on their own.
+- Both AI calls use structured outputs (zod) and the server-side refusal fallback (`fallbacks: "default"`).
