@@ -15,7 +15,7 @@ export const ExtractionSchema = z.object({
   totalKes: z.number(),
   paymentDetails: z.object({
     paybill: z.string().nullable(),
-    accountNo: z.string().nullable(),
+    accountNo: z.string().nullable().describe("Bank account number, not the M-Pesa account reference"),
     bank: z.string().nullable(),
   }),
   issueDate: z.string().nullable(),
