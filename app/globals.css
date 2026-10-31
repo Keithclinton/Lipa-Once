@@ -17,6 +17,12 @@
   --font-display: var(--font-fraunces);
 }
 
+/* inline: the font variables are set on <body> by next/font */
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-display: var(--font-fraunces);
+}
+
 body {
   background: var(--color-cream);
   color: var(--color-ink);
