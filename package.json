@@ -13,7 +13,8 @@
     "db:reset": "prisma db push --force-reset && prisma db seed",
     "test": "vitest run",
     "samples": "tsx scripts/make-samples.ts",
-    "db:seed:if-empty": "tsx prisma/seed.ts --if-empty"
+    "db:seed:if-empty": "tsx prisma/seed.ts --if-empty",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.3.0",
