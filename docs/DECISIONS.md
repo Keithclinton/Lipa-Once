@@ -28,3 +28,12 @@ Short log of choices not dictated by the original plan.
 ## 2026-10-31 — AI review can raise, never lower
 - `lib/ai/explain.ts` adds a short summary and extra concerns. Any concern lifts APPROVE to FLAG; nothing lowers a verdict. If the call fails, the rule findings are shown on their own.
 - Both AI calls use structured outputs (zod) and the server-side refusal fallback (`fallbacks: "default"`).
+
+## 2026-10-31 — "Ask Lipa Moja" uses our own tools, not the PayPal Agent Toolkit
+- The assistant is a Claude tool-runner agent (`lib/ai/assistant.ts`) with five tools, all scoped to the dashboard's institution: `search_payments`, `unpaid_students`, `payment_totals`, `check_payout` (live PayPal Payouts lookup) and `send_fee_invoice` (PayPal Invoicing).
+- Custom tools rather than the Agent Toolkit/MCP server, so every tool can be limited to one school's data and the agent has no refund or payout capability at all.
+- Added a `Student` roster so "who hasn't paid?" compares enrolment with settled payments.
+- Each PayPal invoice is backed by a VERIFIED Payment priced from the school's fee schedule. `INVOICING.INVOICE.PAID` (or polling) moves it to PAID and it is paid out like any other bill.
+
+## 2026-10-31 — Tests use a throwaway SQLite file
+- `vitest.config.ts` points `DATABASE_URL` at `prisma/test.db`, which the global setup deletes and recreates with `prisma db push`. Prisma refuses `--force-reset` when run by an AI agent, and deleting a dedicated test file avoids touching the dev database.

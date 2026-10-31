@@ -2,10 +2,12 @@ import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import { SiteHeader } from "@/components/SiteHeader";
+import { currentTerm } from "@/lib/ai/assistant";
 import { cookieName, isValidSession } from "@/lib/dashboard-auth";
 import { prisma } from "@/lib/db";
-import { formatKes } from "@/lib/format";
+import { formatKes, termLabel } from "@/lib/format";
 import { reasonList, readVerdictDetails } from "@/lib/verdict-details";
+import { AssistantPanel } from "./AssistantPanel";
 import { PasscodeForm } from "./PasscodeForm";
 import { type PaymentRow, PaymentsGrid } from "./PaymentsGrid";
 
@@ -50,6 +52,16 @@ export default async function InstitutionPage({ params }: { params: Promise<{ sl
     senderName: p.senderName,
   }));
 
+  const term = termLabel(currentTerm()).replace(/ \d{4}$/, "");
+  const suggestions =
+    inst.type === "HOSPITAL"
+      ? ["Show this week's payments", "Are any payouts stuck or failed?"]
+      : [
+          `Which Form 3 students haven't paid for ${term}?`,
+          "Show today's payments and any failed payouts",
+          `Invoice Brenda Jeruto's ${term} fees to her guardian at samuel.rotich@example.com`,
+        ];
+
   const settled = payments.filter((p) => p.status === "SETTLED");
   const stats = [
     { label: "Received", value: formatKes(settled.reduce((s, p) => s + p.amountKes, 0)), note: `${settled.length} payments settled` },
@@ -75,7 +87,7 @@ export default async function InstitutionPage({ params }: { params: Promise<{ sl
   return (
     <div className="min-h-screen">
       <SiteHeader />
-      <main className="mx-auto max-w-6xl px-4 pb-20 pt-6">
+      <main className="mx-auto max-w-7xl px-4 pb-20 pt-6">
         <p className="text-sm text-muted">Bursar dashboard</p>
         <h1 className="font-display mt-1 text-3xl font-semibold">{inst.name}</h1>
         <p className="mt-2 text-sm text-muted">
@@ -93,12 +105,15 @@ export default async function InstitutionPage({ params }: { params: Promise<{ sl
           ))}
         </dl>
 
-        <section className="mt-8" aria-labelledby="payments-title">
-          <h2 id="payments-title" className="font-display mb-3 text-xl font-semibold">
-            Payments
-          </h2>
-          <PaymentsGrid rows={rows} />
-        </section>
+        <div className="mt-8 grid gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
+          <section aria-labelledby="payments-title" className="min-w-0">
+            <h2 id="payments-title" className="font-display mb-3 text-xl font-semibold">
+              Payments
+            </h2>
+            <PaymentsGrid rows={rows} />
+          </section>
+          <AssistantPanel slug={slug} suggestions={suggestions} />
+        </div>
       </main>
     </div>
   );
