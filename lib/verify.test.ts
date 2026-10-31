@@ -207,6 +207,21 @@ describe("individual rules", () => {
     expect(severityOf(e, "PAYMENT_DETAILS")).toBe("PASS");
   });
 
+  it("treats a near-miss on an unclear photo as a misread, not fraud", () => {
+    const misread = { paybill: "739120", accountNo: "020735130942", bank: null };
+    expect(severityOf({ ...blurry, paymentDetails: misread }, "PAYMENT_DETAILS")).toBe("FLAG");
+    // The same near-miss on a clear photo is blocked.
+    expect(severityOf({ ...blurry, paymentDetails: misread, confidence: 0.95, legibilityIssues: [] }, "PAYMENT_DETAILS")).toBe("BLOCK");
+    // A completely different number is blocked even on an unclear photo.
+    const swapped = { paybill: "111111", accountNo: null, bank: null };
+    expect(severityOf({ ...blurry, paymentDetails: swapped }, "PAYMENT_DETAILS")).toBe("BLOCK");
+  });
+
+  it("keeps the legibility message short", () => {
+    const e = { ...blurry, legibilityIssues: ["a", "b", "c", "d"] };
+    expect(verifyExtraction(e, ctx).findings.find((f) => f.code === "LEGIBILITY")?.message).toContain("(a; b; and 2 more)");
+  });
+
   it("flags when no payment details are printed", () => {
     const e = { ...genuine, paymentDetails: { paybill: null, accountNo: null, bank: null } };
     expect(severityOf(e, "PAYMENT_DETAILS")).toBe("FLAG");

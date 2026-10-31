@@ -124,19 +124,32 @@ function checkPaymentDetails(e: Extraction, inst: RegistryInstitution): Finding 
   const accountNo = digitsOnly(e.paymentDetails.accountNo);
   const officialPaybill = digitsOnly(inst.officialPaybill);
   const officialAccountNo = digitsOnly(inst.officialAccountNo);
-  const problems: string[] = [];
+  const mismatches: { label: string; read: string; official: string }[] = [];
   if (paybill && officialPaybill && paybill !== officialPaybill) {
-    problems.push(`paybill ${paybill}`);
+    mismatches.push({ label: `paybill ${paybill}`, read: paybill, official: officialPaybill });
   }
   // Ignore an "account" that is really the M-Pesa reference (the admission number).
   if (accountNo && officialAccountNo && accountNo !== e.beneficiaryRef && accountNo !== officialAccountNo) {
-    problems.push(`bank account ${e.paymentDetails.accountNo}`);
+    mismatches.push({ label: `bank account ${e.paymentDetails.accountNo}`, read: accountNo, official: officialAccountNo });
   }
-  if (problems.length) {
+  if (mismatches.length) {
+    // On an unclear photo, a number one or two digits off the official one is
+    // most likely a misread. Money only ever goes to the verified account, so
+    // ask for a clearer photo instead of treating it as fraud.
+    const misread =
+      e.confidence < MIN_CONFIDENCE &&
+      mismatches.every((m) => m.read.length === m.official.length && editDistance(m.read, m.official) <= 2);
+    if (misread) {
+      return {
+        code: "PAYMENT_DETAILS",
+        severity: "FLAG",
+        message: `We couldn't read the ${mismatches.map((m) => m.label.split(" ").slice(0, -1).join(" ")).join(" and ")} clearly, and what we read doesn't quite match ${name}'s verified account. Please upload a clearer photo.`,
+      };
+    }
     return {
       code: "PAYMENT_DETAILS",
       severity: "BLOCK",
-      message: `Payment details don't match ${name}'s verified account: the invoice shows ${problems.join(" and ")}.`,
+      message: `Payment details don't match ${name}'s verified account: the invoice shows ${mismatches.map((m) => m.label).join(" and ")}.`,
     };
   }
   if (!paybill && !accountNo) {
@@ -213,7 +226,9 @@ function checkDuplicate(e: Extraction, inst: RegistryInstitution, settled: Settl
 
 function checkLegibility(e: Extraction): Finding {
   if (e.confidence < MIN_CONFIDENCE || e.legibilityIssues.length) {
-    const issues = e.legibilityIssues.length ? ` (${e.legibilityIssues.join("; ")})` : "";
+    const shown = e.legibilityIssues.slice(0, 2).map((i) => i.replace(/\.$/, ""));
+    const more = e.legibilityIssues.length > 2 ? `; and ${e.legibilityIssues.length - 2} more` : "";
+    const issues = shown.length ? ` (${shown.join("; ")}${more})` : "";
     return {
       code: "LEGIBILITY",
       severity: "FLAG",
