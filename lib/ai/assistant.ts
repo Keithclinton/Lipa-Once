@@ -10,7 +10,7 @@ import { sendFeeInvoice } from "../invoicing";
 import { getPayoutStatus } from "../paypal/payouts";
 import { refreshSettlement } from "../settlement";
 import { reasonList, readVerdictDetails } from "../verdict-details";
-import { AiError, FALLBACK_BETA, MODEL, anthropic, logCall } from "./client";
+import { AiError, MODEL, anthropic, fallbackParams, logCall } from "./client";
 
 export type ChatMessage = { role: "user" | "assistant"; content: string };
 export type ToolActivity = { tool: string; summary: string };
@@ -186,8 +186,7 @@ export async function askAssistant(institutionId: string, history: ChatMessage[]
       model: MODEL,
       max_tokens: 16000,
       max_iterations: 8,
-      betas: [FALLBACK_BETA],
-      fallbacks: "default",
+      ...fallbackParams(),
       output_config: { effort: "medium" },
       system: systemPrompt(inst.name, new Date()),
       tools: buildTools(institutionId, activity, changes),

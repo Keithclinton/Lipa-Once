@@ -1,7 +1,7 @@
 import { betaZodOutputFormat } from "@anthropic-ai/sdk/helpers/beta/zod";
 import { z } from "zod/v4";
 import { formatKes, shortName } from "../format";
-import { FALLBACK_BETA, MODEL, anthropic, logCall } from "./client";
+import { MODEL, anthropic, fallbackParams, logCall } from "./client";
 
 export type ReceiptFacts = {
   senderName: string | null;
@@ -64,8 +64,7 @@ export async function generateReceipt(facts: ReceiptFacts): Promise<Receipt> {
     const response = await anthropic().beta.messages.parse({
       model: MODEL,
       max_tokens: 2000,
-      betas: [FALLBACK_BETA],
-      fallbacks: "default",
+      ...fallbackParams(),
       output_config: { effort: "low", format: betaZodOutputFormat(ReceiptSchema) },
       system: SYSTEM,
       messages: [

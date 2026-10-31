@@ -1,7 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { betaZodOutputFormat } from "@anthropic-ai/sdk/helpers/beta/zod";
 import { type Extraction, ExtractionSchema, normaliseExtraction } from "../extraction";
-import { AiError, FALLBACK_BETA, MODEL, anthropic, logCall } from "./client";
+import { AiError, MODEL, anthropic, fallbackParams, logCall } from "./client";
 
 export type InvoiceFile = {
   data: Buffer;
@@ -34,8 +34,7 @@ async function callOnce(file: InvoiceFile): Promise<Extraction | null> {
   const response = await anthropic().beta.messages.parse({
     model: MODEL,
     max_tokens: 16000,
-    betas: [FALLBACK_BETA],
-    fallbacks: "default",
+    ...fallbackParams(),
     output_config: { effort: "medium", format: betaZodOutputFormat(ExtractionSchema) },
     system: SYSTEM,
     messages: [

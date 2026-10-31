@@ -1,10 +1,15 @@
 import Anthropic from "@anthropic-ai/sdk";
 
-export const MODEL = "claude-sonnet-5-5";
+export const MODEL = process.env.ANTHROPIC_MODEL || "claude-sonnet-5-5";
 
-// Server-side refusal fallback: if the model declines, the API re-runs the
-// request on a fallback model inside the same call.
-export const FALLBACK_BETA = "server-side-fallback-2026-07-01";
+// Models that support the server-side refusal fallback: if the model declines,
+// the API re-runs the request on a fallback model inside the same call.
+// Claude Haiku 5.5 has no server-side fallback, so it is left out.
+const FALLBACK_MODELS = new Set(["claude-sonnet-5-5", "claude-opus-5-5", "claude-opus-5", "claude-fable-5-1"]);
+
+export function fallbackParams(): { betas?: Anthropic.Beta.AnthropicBeta[]; fallbacks?: "default" } {
+  return FALLBACK_MODELS.has(MODEL) ? { betas: ["server-side-fallback-2026-07-01"], fallbacks: "default" } : {};
+}
 
 let client: Anthropic | undefined;
 
