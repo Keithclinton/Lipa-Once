@@ -4,10 +4,11 @@ import {
   type WebhookEvent,
   WebhookEventSchema,
   captureFromEvent,
+  invoiceFromEvent,
   payoutItemFromEvent,
   verifyWebhook,
 } from "@/lib/paypal/webhooks";
-import { recordPayoutResult, sendPayout } from "@/lib/settlement";
+import { recordInvoicePaid, recordPayoutResult, sendPayout } from "@/lib/settlement";
 
 export const runtime = "nodejs";
 
@@ -52,6 +53,13 @@ async function handle(event: WebhookEvent) {
         data: { status: "PAID", paypalCaptureId: capture.data.id },
       });
       await sendPayout(payment.id); // no-op if a payout was already claimed
+      return;
+    }
+    case "INVOICING.INVOICE.PAID": {
+      const invoice = invoiceFromEvent(event);
+      if (!invoice.success) return;
+      const reference = invoice.data.detail?.invoice_number;
+      if (reference) await recordInvoicePaid(reference, invoice.data.payments?.transactions?.[0]?.payment_id ?? null);
       return;
     }
     case "PAYMENT.PAYOUTS-ITEM.SUCCEEDED":

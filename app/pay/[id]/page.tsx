@@ -114,7 +114,7 @@ export default async function ReviewPage({ params }: { params: Promise<{ id: str
               </div>
             </section>
 
-            {payment.invoiceImagePath !== "seed" && (
+            {/^[0-9a-f-]{36}\.(png|jpg|pdf)$/.test(payment.invoiceImagePath) && (
               <figure className="overflow-hidden rounded-3xl border border-ink/10 bg-white">
                 {/* eslint-disable-next-line @next/next/no-img-element -- private, dynamic upload */}
                 <img src={`/api/invoices/${payment.id}`} alt="The uploaded invoice" className="w-full" />

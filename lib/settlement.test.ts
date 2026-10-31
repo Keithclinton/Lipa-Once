@@ -111,6 +111,24 @@ describe("capture and payout", () => {
   });
 });
 
+describe("PayPal invoices", () => {
+  it("pays out when an invoice is paid, once", async () => {
+    await prisma.payment.update({ where: { id: paymentId }, data: { paypalInvoiceId: "INV2-TEST" } });
+    await settlement.recordInvoicePaid("LM-TEST1", "PAYID1");
+    await settlement.recordInvoicePaid("LM-TEST1", "PAYID1");
+    const p = await current();
+    expect(p.status).toBe("PAYOUT_PENDING");
+    expect(p.paypalCaptureId).toBe("PAYID1");
+    expect(createPayout).toHaveBeenCalledTimes(1);
+  });
+
+  it("ignores invoice events for bills that weren't invoiced", async () => {
+    await settlement.recordInvoicePaid("LM-TEST1", "PAYID1");
+    expect((await current()).status).toBe("VERIFIED");
+    expect(createPayout).not.toHaveBeenCalled();
+  });
+});
+
 describe("settlement", () => {
   beforeEach(async () => {
     await settlement.startCheckout(paymentId, false);

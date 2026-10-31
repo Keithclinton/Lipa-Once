@@ -51,12 +51,13 @@ export async function paypalRequest<T>(
   method: "GET" | "POST",
   path: string,
   schema: z.ZodType<T>,
-  options: { body?: unknown; requestId?: string } = {},
+  options: { body?: unknown; requestId?: string; headers?: Record<string, string> } = {},
 ): Promise<T> {
   const { base } = config();
   const headers: Record<string, string> = {
     Authorization: `Bearer ${await accessToken()}`,
     "Content-Type": "application/json",
+    ...options.headers,
   };
   // PayPal-Request-Id makes POST retries idempotent on PayPal's side.
   if (options.requestId) headers["PayPal-Request-Id"] = options.requestId;

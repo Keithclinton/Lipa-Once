@@ -52,3 +52,20 @@ export function captureFromEvent(event: WebhookEvent) {
 export function payoutItemFromEvent(event: WebhookEvent) {
   return PayoutItemResourceSchema.safeParse(event.resource);
 }
+
+const InvoiceResourceSchema = z
+  .object({
+    id: z.string().optional(),
+    detail: z.object({ invoice_number: z.string().optional() }).loose().optional(),
+    payments: z
+      .object({ transactions: z.array(z.object({ payment_id: z.string().optional() }).loose()).optional() })
+      .loose()
+      .optional(),
+  })
+  .loose();
+
+// INVOICING.INVOICE.PAID wraps the invoice in resource.invoice.
+export function invoiceFromEvent(event: WebhookEvent) {
+  const resource = event.resource as { invoice?: unknown };
+  return InvoiceResourceSchema.safeParse(resource.invoice ?? event.resource);
+}

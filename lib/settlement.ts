@@ -5,6 +5,7 @@ import { generateReceipt } from "./ai/receipt";
 import { prisma } from "./db";
 import { formatKes, shortName, termLabel } from "./format";
 import { PayPalError } from "./paypal/client";
+import { PAID_INVOICE_STATUSES, getInvoice } from "./paypal/invoices";
 import { captureOrder, createOrder } from "./paypal/orders";
 import { FAILED_ITEM_STATUSES, createPayout, getPayoutStatus } from "./paypal/payouts";
 import { quote } from "./pricing";
@@ -93,6 +94,18 @@ export async function sendPayout(paymentId: string): Promise<void> {
   }
 }
 
+// A PayPal invoice was paid: same as a capture, then pay the institution.
+export async function recordInvoicePaid(reference: string, paypalPaymentId: string | null): Promise<void> {
+  const paid = await prisma.payment.updateMany({
+    where: { reference, status: "VERIFIED", paypalInvoiceId: { not: null } },
+    data: { status: "PAID", paypalCaptureId: paypalPaymentId },
+  });
+  if (paid.count) {
+    const payment = await prisma.payment.findUniqueOrThrow({ where: { reference } });
+    await sendPayout(payment.id);
+  }
+}
+
 // Applies a payout item's status from a webhook or from polling.
 export async function recordPayoutResult(reference: string, itemStatus: string | null, itemId: string | null) {
   if (itemStatus === "SUCCESS") {
@@ -135,7 +148,10 @@ export async function refreshSettlement(reference: string): Promise<void> {
   const p = await prisma.payment.findUnique({ where: { reference } });
   if (!p) return;
   try {
-    if (p.status === "PAID" && p.paypalCaptureId) {
+    if (p.status === "VERIFIED" && p.paypalInvoiceId) {
+      const invoice = await getInvoice(p.paypalInvoiceId);
+      if (PAID_INVOICE_STATUSES.has(invoice.status)) await recordInvoicePaid(reference, invoice.paymentId);
+    } else if (p.status === "PAID") {
       await sendPayout(p.id);
     } else if (p.status === "PAYOUT_PENDING" && p.payoutBatchId) {
       const item = await getPayoutStatus(p.payoutBatchId);
