@@ -127,7 +127,7 @@ npm run dev                   # http://localhost:3000/demo
 
 Without webhooks (for example on localhost), the receipt page polls PayPal directly, so payments still settle.
 
-**Tests:** `npm test` runs the unit and integration tests. `npm run test:e2e` runs the Playwright smoke test; set `ANTHROPIC_API_KEY` to include the live AI checks, or `E2E_BASE_URL` to point it at a deployment. `npm run samples` regenerates the sample invoices.
+**Tests:** `npm test` runs the unit and integration tests. `npm run test:e2e` runs the Playwright smoke test; set `E2E_LIVE_AI=1` (with `ANTHROPIC_API_KEY` in `.env`) to include the live AI checks, or `E2E_BASE_URL` to point it at a deployment. `npm run samples` regenerates the sample invoices.
 
 **Deploy:** `render.yaml` is a Render Blueprint (web service plus Postgres). On first boot it applies the schema and seeds the demo registry.
 

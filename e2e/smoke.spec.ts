@@ -35,14 +35,15 @@ test("the bursar dashboard lists payments in AG Grid", async ({ page }) => {
 });
 
 test.describe("full AI check", () => {
-  test.skip(!process.env.ANTHROPIC_API_KEY, "needs ANTHROPIC_API_KEY");
+  // The server needs ANTHROPIC_API_KEY; set E2E_LIVE_AI=1 to run these.
+  test.skip(!process.env.E2E_LIVE_AI, "set E2E_LIVE_AI=1 to run the live AI checks");
 
   test("the genuine invoice is approved", async ({ page }) => {
     await page.goto("/demo");
     await page.getByRole("article").filter({ hasText: "Genuine invoice" }).getByRole("button").click();
     await expect(page).toHaveURL(/\/pay\/[a-z0-9]+$/, { timeout: 90_000 });
     await expect(page.getByRole("heading", { name: "Safe to pay" })).toBeVisible();
-    await expect(page.getByText("Achieng Otieno")).toBeVisible();
+    await expect(page.getByRole("definition").filter({ hasText: "Achieng Otieno" })).toBeVisible();
   });
 
   test("the doctored invoice is blocked", async ({ page }) => {
@@ -50,8 +51,8 @@ test.describe("full AI check", () => {
     await page.getByRole("article").filter({ hasText: "Doctored invoice" }).getByRole("button").click();
     await expect(page).toHaveURL(/\/pay\/[a-z0-9]+$/, { timeout: 90_000 });
     await expect(page.getByRole("heading", { name: "We can't pay this bill" })).toBeVisible();
-    await expect(page.getByText(/Payment details don't match/)).toBeVisible();
-    await expect(page.getByText(/2\.3× the usual Form 3/)).toBeVisible();
+    await expect(page.getByRole("listitem").filter({ hasText: /Payment details don.t match/ })).toBeVisible();
+    await expect(page.getByRole("listitem").filter({ hasText: /2\.3× the usual Form 3/ })).toBeVisible();
     await expect(page.getByText("Payment is disabled for this invoice.")).toBeVisible();
   });
 });
