@@ -106,6 +106,11 @@ export default function DemoPage() {
             <p className="mt-3 text-sm text-muted">
               See payments arriving at Mlima Girls, with flagged and blocked attempts highlighted.
             </p>
+            {process.env.DASHBOARD_PASSCODE && (
+              <p className="mt-2 text-sm">
+                Passcode: <span className="font-mono">{process.env.DASHBOARD_PASSCODE}</span>
+              </p>
+            )}
             <Link
               href="/institution/mlima-girls-eldoret"
               className="mt-4 inline-block rounded-full border border-forest/30 px-4 py-2 text-sm font-medium text-forest hover:bg-sand"

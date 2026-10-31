@@ -27,3 +27,11 @@ body {
   background: var(--color-cream);
   color: var(--color-ink);
 }
+
+/* Institution dashboard: highlight rows that need a bursar's attention. */
+.lm-row-block {
+  background-color: rgb(185 28 28 / 0.06);
+}
+.lm-row-flag {
+  background-color: rgb(253 236 211 / 0.7);
+}
