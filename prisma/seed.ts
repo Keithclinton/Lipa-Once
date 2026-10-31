@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { quote } from "../lib/pricing";
-import { HOSPITAL_TERM, INSTITUTIONS, PAYMENTS, TERMS, payoutEmail, termFee } from "./seed-data";
+import { HOSPITAL_TERM, INSTITUTIONS, PAYMENTS, STUDENTS, TERMS, payoutEmail, termFee } from "./seed-data";
 
 const prisma = new PrismaClient();
 
@@ -8,6 +8,7 @@ async function main() {
   // Start from a clean slate so the seed can be re-run safely.
   await prisma.payment.deleteMany();
   await prisma.feeSchedule.deleteMany();
+  await prisma.student.deleteMany();
 
   const idBySlug = new Map<string, string>();
 
@@ -38,6 +39,14 @@ async function main() {
     });
   }
 
+  await prisma.student.createMany({
+    data: STUDENTS.map(({ institutionSlug, ...s }) => {
+      const institutionId = idBySlug.get(institutionSlug);
+      if (!institutionId) throw new Error(`Unknown institution ${institutionSlug}`);
+      return { ...s, institutionId };
+    }),
+  });
+
   for (const p of PAYMENTS) {
     const institutionId = idBySlug.get(p.institutionSlug);
     if (!institutionId) throw new Error(`Unknown institution ${p.institutionSlug}`);
@@ -66,12 +75,15 @@ async function main() {
     });
   }
 
-  const [institutions, schedules, payments] = await Promise.all([
+  const [institutions, schedules, students, payments] = await Promise.all([
     prisma.institution.count(),
     prisma.feeSchedule.count(),
+    prisma.student.count(),
     prisma.payment.count(),
   ]);
-  console.log(`Seeded ${institutions} institutions, ${schedules} fee schedules, ${payments} payments.`);
+  console.log(
+    `Seeded ${institutions} institutions, ${schedules} fee schedules, ${students} students, ${payments} payments.`,
+  );
 }
 
 main()

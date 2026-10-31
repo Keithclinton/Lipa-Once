@@ -227,3 +227,30 @@ export const PAYMENTS: SeedPayment[] = [
     settledAt: "2026-09-21T22:12:00Z",
   },
 ];
+
+export type SeedStudent = { institutionSlug: string; name: string; admNo: string; level: string; guardianName?: string };
+
+// Enrolment for the bursar assistant. Includes everyone in the payment
+// history and the sample invoices, plus classmates who haven't paid yet.
+export const STUDENTS: SeedStudent[] = [
+  ...[
+    ["Cynthia Naliaka", "2755", "Form 1", "Mary Wekesa"],
+    ["Purity Chelangat", "2761", "Form 1", "Joseph Kirui"],
+    ["Mercy Jepkoech", "3187", "Form 2", "Ruth Jepkoech"],
+    ["Diana Moraa", "3192", "Form 2", "Agnes Nyaboke"],
+    ["Linet Kerubo", "3920", "Form 4", "Anne Moraa"],
+    ["Sharon Wambui", "4398", "Form 3", "Grace Njeri"],
+    ["Joy Chepchirchir", "4410", "Form 3", "Eunice Chebet"],
+    ["Faith Atieno", "4502", "Form 3", "Peter Ochieng"],
+    ["Achieng Otieno", "4521", "Form 3", "Mama Achieng"],
+    ["Wairimu Kamau", "4533", "Form 3", "Lucy Wanjiku"],
+    ["Brenda Jeruto", "4540", "Form 3", "Samuel Rotich"],
+    ["Esther Wanjiru", "4547", "Form 3", "Tabitha Muthoni"],
+    ["Halima Abdi", "4555", "Form 3", "Fatuma Hassan"],
+  ].map(([name, admNo, level, guardianName]) => ({ institutionSlug: "mlima-girls-eldoret", name, admNo, level, guardianName })),
+  ...[
+    ["Kevin Odhiambo", "6120", "Form 4", "Lucy Akinyi"],
+    ["Brian Otieno", "6245", "Form 3", "Rose Adhiambo"],
+    ["Collins Omondi", "6251", "Form 3", "Jane Awino"],
+  ].map(([name, admNo, level, guardianName]) => ({ institutionSlug: "lakeside-boys-kisumu", name, admNo, level, guardianName })),
+];

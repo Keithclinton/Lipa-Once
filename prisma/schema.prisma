@@ -12,8 +12,8 @@ datasource db {
 
 model Institution {
   id                String        @id @default(cuid())
-  slug              String        @unique // "moi-girls-eldoret"
-  name              String // "Moi Girls High School, Eldoret"
+  slug              String        @unique // "mlima-girls-eldoret"
+  name              String // "Mlima Girls National School, Eldoret"
   type              String // "SCHOOL" | "HOSPITAL"
   county            String
   paypalEmail       String // sandbox business account (payout receiver)
@@ -22,6 +22,20 @@ model Institution {
   verified          Boolean       @default(true)
   feeSchedules      FeeSchedule[]
   payments          Payment[]
+  students          Student[]
+}
+
+// Enrolment list, so the bursar assistant can answer "who hasn't paid?".
+model Student {
+  id            String      @id @default(cuid())
+  institutionId String
+  institution   Institution @relation(fields: [institutionId], references: [id])
+  name          String
+  admNo         String
+  level         String // "Form 1".."Form 4"
+  guardianName  String?
+
+  @@unique([institutionId, admNo])
 }
 
 // Typical fees, used for amount anomaly checks.
@@ -58,6 +72,7 @@ model Payment {
   familyPhone      String?
   paypalOrderId    String?
   paypalCaptureId  String?
+  paypalInvoiceId  String? // set when the bursar sends a PayPal invoice instead
   payoutBatchId    String?
   payoutItemId     String?
   status           String       @default("DRAFT") // DRAFT|VERIFIED|PAID|PAYOUT_PENDING|SETTLED|FAILED|BLOCKED
