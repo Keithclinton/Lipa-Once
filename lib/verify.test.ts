@@ -4,6 +4,7 @@ import type { Extraction } from "./extraction";
 import {
   type RegistryInstitution,
   type VerifyContext,
+  applyAiConcerns,
   matchInstitution,
   nameSimilarity,
   verifyExtraction,
@@ -219,6 +220,13 @@ describe("individual rules", () => {
   it("only treats the same beneficiary and term as a duplicate", () => {
     expect(severityOf({ ...duplicate, term: "2026-T2" }, "DUPLICATE")).toBe("PASS");
     expect(severityOf({ ...duplicate, beneficiaryRef: "3188" }, "DUPLICATE")).toBe("PASS");
+  });
+
+  it("lets AI concerns raise but never lower the verdict", () => {
+    expect(applyAiConcerns("APPROVE", ["Odd charge"])).toBe("FLAG");
+    expect(applyAiConcerns("APPROVE", [])).toBe("APPROVE");
+    expect(applyAiConcerns("BLOCK", [])).toBe("BLOCK");
+    expect(applyAiConcerns("FLAG", ["Odd charge"])).toBe("FLAG");
   });
 
   it("picks the most severe result", () => {

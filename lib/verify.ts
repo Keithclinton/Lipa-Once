@@ -228,6 +228,11 @@ export function worstVerdict(severities: Severity[]): Verdict {
   return worst === "PASS" ? "APPROVE" : worst;
 }
 
+// AI concerns can raise APPROVE to FLAG. Nothing the AI says lowers a verdict.
+export function applyAiConcerns(ruleVerdict: Verdict, concerns: string[]): Verdict {
+  return ruleVerdict === "APPROVE" && concerns.length ? "FLAG" : ruleVerdict;
+}
+
 export function verifyExtraction(e: Extraction, ctx: VerifyContext): VerifyResult {
   const findings: Finding[] = [];
 
