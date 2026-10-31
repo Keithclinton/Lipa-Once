@@ -12,7 +12,8 @@
     "db:seed": "prisma db seed",
     "db:reset": "prisma db push --force-reset && prisma db seed",
     "test": "vitest run",
-    "samples": "tsx scripts/make-samples.ts"
+    "samples": "tsx scripts/make-samples.ts",
+    "db:seed:if-empty": "tsx prisma/seed.ts --if-empty"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.3.0",
@@ -43,5 +44,8 @@
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
+  },
+  "engines": {
+    "node": ">=20.19"
   }
 }

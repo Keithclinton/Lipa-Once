@@ -1,0 +1,50 @@
+# Render Blueprint: one web service plus a Postgres database.
+# Deploy with "New > Blueprint" on render.com and fill in the secret env vars.
+services:
+  - type: web
+    name: lipa-moja
+    runtime: node
+    plan: free
+    region: frankfurt
+    buildCommand: npm ci && npm run build
+    # Apply the schema and seed the demo registry on first boot only.
+    startCommand: npx prisma db push --skip-generate && npm run db:seed:if-empty && npm start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: lipa-moja-db
+          property: connectionString
+      - key: PAYPAL_API_BASE
+        value: https://api-m.sandbox.paypal.com
+      - key: NEXT_PUBLIC_PAYPAL_ENV
+        value: sandbox
+      - key: FX_KES_PER_USD
+        value: "129"
+      - key: UPLOAD_DIR
+        value: /tmp/lipa-moja-uploads
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: PAYPAL_CLIENT_ID
+        sync: false
+      - key: PAYPAL_CLIENT_SECRET
+        sync: false
+      - key: PAYPAL_WEBHOOK_ID
+        sync: false
+      - key: NEXT_PUBLIC_PAYPAL_CLIENT_ID
+        sync: false
+      - key: APP_BASE_URL
+        sync: false
+      - key: SANDBOX_BUYER_EMAIL
+        sync: false
+      - key: SANDBOX_BUYER_PASSWORD
+        sync: false
+      - key: DASHBOARD_PASSCODE
+        sync: false
+
+databases:
+  - name: lipa-moja-db
+    plan: free
+    region: frankfurt

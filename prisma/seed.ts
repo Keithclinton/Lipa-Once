@@ -5,6 +5,12 @@ import { HOSPITAL_TERM, INSTITUTIONS, PAYMENTS, STUDENTS, TERMS, payoutEmail, te
 const prisma = new PrismaClient();
 
 async function main() {
+  // On deploys the seed runs with --if-empty so restarts never wipe payments.
+  if (process.argv.includes("--if-empty") && (await prisma.institution.count()) > 0) {
+    console.log("Database already seeded; skipping.");
+    return;
+  }
+
   // Start from a clean slate so the seed can be re-run safely.
   await prisma.payment.deleteMany();
   await prisma.feeSchedule.deleteMany();

@@ -6,6 +6,9 @@ import { SampleButton } from "./SampleButton";
 
 export const metadata: Metadata = { title: "Demo — Lipa Moja" };
 
+// Reads sandbox credentials from env at request time.
+export const dynamic = "force-dynamic";
+
 const SAMPLES = [
   {
     sample: "genuine",
