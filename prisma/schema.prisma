@@ -69,3 +69,10 @@ model Payment {
 
   @@index([institutionId, beneficiaryRef, term])
 }
+
+// PayPal webhook events already handled, so redelivered events are ignored.
+model WebhookEvent {
+  id         String   @id // PayPal event id
+  type       String
+  receivedAt DateTime @default(now())
+}
