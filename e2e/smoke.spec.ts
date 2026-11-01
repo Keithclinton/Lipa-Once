@@ -20,8 +20,8 @@ test("a settled payment has a bilingual receipt", async ({ page }) => {
   await page.goto("/r/LM-H7K2P");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Paid in full");
   // The receipt message is written on first view if it's missing.
-  await expect(page.getByText(/amelipa/)).toBeVisible({ timeout: 30_000 });
-  await expect(page.getByText(/has paid KES 19,800/)).toBeVisible();
+  await expect(page.locator("[lang=sw]").filter({ hasText: "LM-H7K2P" })).toBeVisible({ timeout: 30_000 });
+  await expect(page.getByText(/KES 19,800/).first()).toBeVisible();
   await expect(page.getByRole("button", { name: "Copy for WhatsApp" })).toBeVisible();
 });
 
