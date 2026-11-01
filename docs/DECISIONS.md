@@ -29,7 +29,7 @@ Short log of choices not dictated by the original plan.
 - `lib/ai/explain.ts` adds a short summary and extra concerns. Any concern lifts APPROVE to FLAG; nothing lowers a verdict. If the call fails, the rule findings are shown on their own.
 - AI calls use structured outputs (zod). The server-side refusal fallback (`fallbacks: "default"`) is sent only to models that support it; Claude Haiku 5.5 has none.
 
-## 2026-10-31 — "Ask Lipa Moja" uses our own tools, not the PayPal Agent Toolkit
+## 2026-10-31 — "Ask Lipa Once" uses our own tools, not the PayPal Agent Toolkit
 - The assistant is a Claude tool-runner agent (`lib/ai/assistant.ts`) with five tools, all scoped to the dashboard's institution: `search_payments`, `unpaid_students`, `payment_totals`, `check_payout` (live PayPal Payouts lookup) and `send_fee_invoice` (PayPal Invoicing).
 - Custom tools rather than the Agent Toolkit/MCP server, so every tool can be limited to one school's data and the agent has no refund or payout capability at all.
 - Added a `Student` roster so "who hasn't paid?" compares enrolment with settled payments.

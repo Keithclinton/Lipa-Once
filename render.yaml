@@ -2,7 +2,7 @@
 # Deploy with "New > Blueprint" on render.com and fill in the secret env vars.
 services:
   - type: web
-    name: lipa-moja
+    name: lipa-once
     runtime: node
     plan: free
     region: frankfurt
@@ -15,7 +15,7 @@ services:
         value: "22"
       - key: DATABASE_URL
         fromDatabase:
-          name: lipa-moja-db
+          name: lipa-once-db
           property: connectionString
       - key: PAYPAL_API_BASE
         value: https://api-m.sandbox.paypal.com
@@ -24,7 +24,7 @@ services:
       - key: FX_KES_PER_USD
         value: "129"
       - key: UPLOAD_DIR
-        value: /tmp/lipa-moja-uploads
+        value: /tmp/lipa-once-uploads
       - key: ANTHROPIC_API_KEY
         sync: false
       - key: ANTHROPIC_MODEL
@@ -50,6 +50,6 @@ services:
         sync: false
 
 databases:
-  - name: lipa-moja-db
+  - name: lipa-once-db
     plan: free
     region: frankfurt

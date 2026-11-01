@@ -1,10 +1,10 @@
-# Lipa Moja
+# Lipa Once
 
 **Diaspora money that pays the bill, not the person.** Upload a school fee invoice or hospital bill, let AI check it against a registry of verified institutions, pay in dollars with PayPal, and the money goes straight to the school. Your family gets a receipt in English and Swahili.
 
-*Lipa moja* is Swahili for "pay once" or "pay directly".
+*Lipa* is Swahili for "pay". Lipa Once means the bill is paid once, straight to the school, with nothing lost along the way.
 
-![Lipa Moja landing page](docs/screenshots/landing.png)
+![Lipa Once landing page](docs/screenshots/landing.png)
 
 ## Try it
 
@@ -29,7 +29,7 @@ Kenyans abroad send money home for specific bills: school fees, hospital bills, 
 
 1. **Upload the bill.** A photo or PDF of the invoice the family sent.
 2. **AI reads and verifies it.** Claude extracts every line. Deterministic rules then check the school against a verified registry, compare the paybill and bank account with the school's official ones, compare the amount with the school's fee schedule, and look for an earlier payment of the same bill. The result is **Approve**, **Flag** or **Block**, with every reason in plain English.
-3. **Pay the institution directly.** The sender pays in USD with PayPal Checkout. Lipa Moja pays the bill amount to the school's verified PayPal account with PayPal Payouts. The relative never handles the money.
+3. **Pay the institution directly.** The sender pays in USD with PayPal Checkout. Lipa Once pays the bill amount to the school's verified PayPal account with PayPal Payouts. The relative never handles the money.
 4. **Proof for the family.** Once PayPal confirms the payout, the family gets a WhatsApp-ready receipt in Swahili and English, with a link and QR code to check it.
 
 | A doctored invoice is blocked | The family's receipt |
@@ -38,14 +38,14 @@ Kenyans abroad send money home for specific bills: school fees, hospital bills, 
 
 Schools get a bursar dashboard (built with AG Grid) showing every incoming payment, with blocked and flagged attempts highlighted. It also has an assistant that answers questions like "Which Form 3 students haven't paid for Term 3?" and can email a PayPal invoice to a guardian.
 
-![Bursar dashboard with AG Grid and the Ask Lipa Moja assistant](docs/screenshots/dashboard.png)
+![Bursar dashboard with AG Grid and the Ask Lipa Once assistant](docs/screenshots/dashboard.png)
 
 ## How PayPal is used
 
 | PayPal product | Where | What it does |
 |---|---|---|
 | **JS SDK v6** | Review page | One-time payment session behind the PayPal button. The order is created by our API when the sender clicks, so the amount always comes from the server. |
-| **Orders v2** | `lib/paypal/orders.ts` | Creates a USD order itemised as bill plus service fee, with the Lipa Moja reference as `custom_id` and `invoice_id`, then captures it. |
+| **Orders v2** | `lib/paypal/orders.ts` | Creates a USD order itemised as bill plus service fee, with the Lipa Once reference as `custom_id` and `invoice_id`, then captures it. |
 | **Payouts v1** | `lib/paypal/payouts.ts` | Sends the bill amount (not the service fee) to the institution's verified PayPal account. The payment reference is the `sender_batch_id`, so PayPal itself rejects a second payout for the same bill. |
 | **Webhooks** | `/api/paypal/webhook` | Every event is signature-verified and de-duplicated. `PAYMENT.CAPTURE.COMPLETED` triggers the payout, `PAYMENT.PAYOUTS-ITEM.*` settles or fails it, and `INVOICING.INVOICE.PAID` handles paid invoices. If webhooks can't arrive, polling of the Payouts and Invoicing APIs is the fallback. |
 | **Invoicing v2** | `lib/paypal/invoices.ts` | The bursar assistant can email a PayPal invoice priced from the school's own fee schedule. A paid invoice flows into the same payout pipeline. |
@@ -59,7 +59,7 @@ All AI calls use the Anthropic Claude API (`claude-sonnet-5-5`) with structured 
 | **Invoice extraction** | `lib/ai/extract.ts` | A vision model reads the photo or PDF into a strict schema: institution, student, admission number, class, term, line items, total, paybill, bank account, a confidence score and legibility issues. It is told to extract only what is printed and to use `null` rather than guess. |
 | **Verification review** | `lib/ai/explain.ts` | After the deterministic rules run, the model writes a short summary for the sender and can raise extra concerns, such as an unexpected "compulsory" levy. A concern can raise Approve to Flag; **nothing the AI says can lower a verdict**. |
 | **Receipts** | `lib/ai/receipt.ts` | Writes a WhatsApp-style message of 60 words or fewer in English and Swahili. The output must keep the exact amount and reference, or a fixed bilingual template is used instead. |
-| **Ask Lipa Moja** | `lib/ai/assistant.ts` | A tool-using agent for bursars with five tools, all scoped to that school: search payments, find students who haven't paid, totals, live payout status from PayPal, and sending a PayPal fee invoice. It has no refund or payout tools. |
+| **Ask Lipa Once** | `lib/ai/assistant.ts` | A tool-using agent for bursars with five tools, all scoped to that school: search payments, find students who haven't paid, totals, live payout status from PayPal, and sending a PayPal fee invoice. It has no refund or payout tools. |
 
 ### The verification rules
 
@@ -93,7 +93,7 @@ flowchart LR
   RC --> F["/r/[reference]<br/>receipt + QR"]
   F -->|WhatsApp share| FAM[Family at home]
   DB --> D["/institution/[slug]<br/>AG Grid dashboard"]
-  D --> AG["Ask Lipa Moja<br/>Claude + tools"]
+  D --> AG["Ask Lipa Once<br/>Claude + tools"]
   AG -->|Invoicing v2| INV[PayPal invoice]
   INV -->|INVOICE.PAID| PO
 ```
@@ -136,7 +136,7 @@ Without webhooks (for example on localhost), the receipt page polls PayPal direc
 - **Institutions onboard once.** Each school or hospital connects a verified PayPal business account and registers its official paybill, bank account and fee structure. In production this needs KYC and institution verification, for example against Ministry of Education registration. Here the registry is seeded.
 - **Getting money to the school locally.** Schools receive USD in PayPal and withdraw to a Kenyan bank account. A production version would add a local payout rail.
 - **Fixed exchange rate.** The KES to USD rate is a fixed indicative rate (`FX_KES_PER_USD`), shown on screen. Production would quote a live rate.
-- **Receipts are shared, not sent.** Lipa Moja doesn't send WhatsApp messages or SMS; the sender shares the receipt with one tap.
+- **Receipts are shared, not sent.** Lipa Once doesn't send WhatsApp messages or SMS; the sender shares the receipt with one tap.
 - **Uploads use local disk.** Production would use object storage.
 - **Senders don't have accounts.** A payment is identified by its reference, and bursar dashboards use a shared passcode.
 
