@@ -153,7 +153,9 @@ export default async function ReceiptPage({ params }: { params: Promise<{ refere
             </Item>
             <Item label="Paid by">{payment.senderName ?? "A relative abroad"}</Item>
             <Item label="Date">{formatDate(payment.settledAt ?? payment.updatedAt)}</Item>
-            <Item label="PayPal reference">{payment.payoutItemId ?? payment.paypalCaptureId ?? "—"}</Item>
+            {(payment.payoutItemId ?? payment.paypalCaptureId) && (
+              <Item label="PayPal reference">{payment.payoutItemId ?? payment.paypalCaptureId}</Item>
+            )}
           </dl>
           <figure className="mx-auto w-40 text-center">
             <div className="rounded-2xl border border-ink/10 bg-white p-2" dangerouslySetInnerHTML={{ __html: qrSvg }} />
