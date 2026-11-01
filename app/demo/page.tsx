@@ -4,7 +4,7 @@ import Link from "next/link";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SampleButton } from "./SampleButton";
 
-export const metadata: Metadata = { title: "Demo — Lipa Moja" };
+export const metadata: Metadata = { title: "Demo — Lipa Once" };
 
 // Reads sandbox credentials from env at request time.
 export const dynamic = "force-dynamic";
@@ -50,7 +50,7 @@ export default function DemoPage() {
     <div className="min-h-screen">
       <SiteHeader />
       <main className="mx-auto max-w-5xl px-4 pb-20 pt-6">
-        <h1 className="font-display text-3xl font-semibold sm:text-4xl">Try Lipa Moja</h1>
+        <h1 className="font-display text-3xl font-semibold sm:text-4xl">Try Lipa Once</h1>
         <p className="mt-3 max-w-2xl text-muted">
           Each sample runs the full flow: the AI reads the invoice, we check it against the registry, and you can pay
           with a PayPal sandbox account. All schools, students and numbers are fictional.

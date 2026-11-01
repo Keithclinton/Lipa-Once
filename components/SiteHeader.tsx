@@ -4,7 +4,7 @@ export function SiteHeader() {
   return (
     <header className="mx-auto flex max-w-5xl items-center justify-between px-4 py-5">
       <Link href="/" className="font-display text-xl font-semibold text-forest">
-        Lipa Moja
+        Lipa Once
       </Link>
       <nav className="flex items-center gap-4 text-sm">
         <Link href="/demo" className="text-muted hover:text-ink">

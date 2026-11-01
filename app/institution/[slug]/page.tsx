@@ -16,7 +16,7 @@ export const dynamic = "force-dynamic";
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const inst = await prisma.institution.findUnique({ where: { slug }, select: { name: true } });
-  return { title: `${inst?.name ?? "Dashboard"} — Lipa Moja` };
+  return { title: `${inst?.name ?? "Dashboard"} — Lipa Once` };
 }
 
 export default async function InstitutionPage({ params }: { params: Promise<{ slug: string }> }) {

@@ -12,7 +12,7 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: Promise<{ reference: string }> }): Promise<Metadata> {
   const { reference } = await params;
-  return { title: `Receipt ${reference} — Lipa Moja` };
+  return { title: `Receipt ${reference} — Lipa Once` };
 }
 
 const STEPS = [

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { SiteHeader } from "@/components/SiteHeader";
 import { UploadForm } from "./UploadForm";
 
-export const metadata: Metadata = { title: "Pay a bill — Lipa Moja" };
+export const metadata: Metadata = { title: "Pay a bill — Lipa Once" };
 
 export default function PayPage() {
   return (

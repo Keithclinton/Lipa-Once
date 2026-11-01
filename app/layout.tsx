@@ -13,7 +13,7 @@ const fraunces = Fraunces({
 });
 
 export const metadata: Metadata = {
-  title: "Lipa Moja — pay the bill, not the person",
+  title: "Lipa Once — pay the bill, not the person",
   description: "Send money home that goes straight to the verified school or hospital.",
 };
 

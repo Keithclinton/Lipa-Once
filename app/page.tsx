@@ -99,7 +99,7 @@ export default function Home() {
               Every shilling reaches the school.
             </h2>
             <p className="mt-3 max-w-2xl text-white/80">
-              Lipa Moja only pays institutions we&rsquo;ve verified, and blocks invoices whose payment details or
+              Lipa Once only pays institutions we&rsquo;ve verified, and blocks invoices whose payment details or
               amounts don&rsquo;t add up.
             </p>
             <Link
@@ -113,7 +113,7 @@ export default function Home() {
       </main>
 
       <footer className="border-t border-ink/10 py-8 text-center text-sm text-muted">
-        Lipa Moja · Sandbox demo · Institutions shown are fictional
+        Lipa Once · Sandbox demo · Institutions shown are fictional
       </footer>
     </div>
   );

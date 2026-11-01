@@ -37,7 +37,7 @@ test("the bursar dashboard lists payments in AG Grid", async ({ page }) => {
   const grid = page.getByRole("treegrid").or(page.getByRole("grid"));
   await expect(grid.getByText("Mercy Jepkoech")).toBeVisible();
   await expect(page.locator(".lm-row-block").first()).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Ask Lipa Moja" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Ask Lipa Once" })).toBeVisible();
 });
 
 test.describe("full AI check", () => {

@@ -66,7 +66,7 @@ export function AssistantPanel({ slug, suggestions }: { slug: string; suggestion
     <section className="flex h-full flex-col rounded-3xl border border-ink/10 bg-white" aria-labelledby="assistant-title">
       <div className="border-b border-ink/10 px-5 py-4">
         <h2 id="assistant-title" className="font-display text-xl font-semibold">
-          Ask Lipa Moja
+          Ask Lipa Once
         </h2>
         <p className="text-sm text-muted">Questions about your payments, or send a fee invoice by PayPal.</p>
       </div>

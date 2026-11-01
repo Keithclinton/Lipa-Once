@@ -10,7 +10,7 @@ import { quote } from "@/lib/pricing";
 import { readVerdictDetails } from "@/lib/verdict-details";
 import { PayPanel } from "./PayPanel";
 
-export const metadata: Metadata = { title: "Review your bill — Lipa Moja" };
+export const metadata: Metadata = { title: "Review your bill — Lipa Once" };
 
 const PAID_STATUSES = new Set(["PAID", "PAYOUT_PENDING", "SETTLED", "FAILED"]);
 
