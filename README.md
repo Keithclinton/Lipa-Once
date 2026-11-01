@@ -10,12 +10,12 @@
 
 | | |
 |---|---|
-| **Live demo** | _Render URL goes here_ |
-| **Judges' shortcut** | `/demo` runs the full flow on four sample invoices in one click |
-| **PayPal sandbox buyer** | Email: _sandbox buyer email_ · Password: _sandbox buyer password_ (also shown on `/demo`) |
-| **School dashboard** | `/institution/mlima-girls-eldoret` · passcode shown on `/demo` |
+| **Live demo** | [lipa-once.onrender.com](https://lipa-once.onrender.com) |
+| **Judges' shortcut** | [`/demo`](https://lipa-once.onrender.com/demo) runs the full flow on four sample invoices in one click |
+| **PayPal sandbox buyer** | Email: `sb-rsw43u53638563@personal.example.com` · Password: `)JDz3aI!` (also shown on `/demo`) |
+| **School dashboard** | [`/institution/mlima-girls-eldoret`](https://lipa-once.onrender.com/institution/mlima-girls-eldoret) · passcode `mlima2026` |
 
-All schools, students, paybill numbers and payments are fictional. PayPal runs in sandbox mode, so no real money moves.
+All schools, students, paybill numbers and payments are fictional. PayPal runs in sandbox mode, so no real money moves. The demo runs on Render's free plan, so the first visit after a quiet spell can take up to a minute while the server wakes up.
 
 ## The problem
 
