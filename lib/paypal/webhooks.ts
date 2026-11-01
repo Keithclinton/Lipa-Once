@@ -21,6 +21,8 @@ export async function verifyWebhook(headers: Headers, event: unknown): Promise<b
     return false;
   }
   const header = (name: string) => headers.get(name) ?? "";
+  // Not from PayPal: there's no signature to check.
+  if (!header("paypal-transmission-id") || !header("paypal-transmission-sig")) return false;
   const res = await paypalRequest("POST", "/v1/notifications/verify-webhook-signature", VerifySchema, {
     body: {
       auth_algo: header("paypal-auth-algo"),
