@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 type Props = {
@@ -35,7 +34,6 @@ function loadSdk(): Promise<PayPalV6.Namespace> {
 type Phase = "loading" | "ready" | "unavailable" | "paying" | "capturing";
 
 export function PayPanel({ paymentId, verdict, totalUsd }: Props) {
-  const router = useRouter();
   const [acknowledged, setAcknowledged] = useState(false);
   const [phase, setPhase] = useState<Phase>("loading");
   const [error, setError] = useState<string | null>(null);
@@ -64,7 +62,8 @@ export function PayPanel({ paymentId, verdict, totalUsd }: Props) {
         setPhase("ready");
         return;
       }
-      router.push(`/r/${body.reference}`);
+      // A full navigation: the client router is unreliable inside the PayPal callback.
+      window.location.assign(`/r/${body.reference}`);
     }
 
     (async () => {
@@ -96,7 +95,7 @@ export function PayPanel({ paymentId, verdict, totalUsd }: Props) {
     return () => {
       cancelled = true;
     };
-  }, [blocked, router]);
+  }, [blocked]);
 
   async function createOrder(): Promise<{ orderId: string }> {
     const res = await fetch("/api/paypal/orders", {
