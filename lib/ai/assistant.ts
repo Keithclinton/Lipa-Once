@@ -1,4 +1,4 @@
-// "Ask Lipa Moja": a bursar's assistant. Every tool is scoped to one
+// "Ask Lipa Once": a bursar's assistant. Every tool is scoped to one
 // institution. It can read payments, check PayPal payouts and send fee
 // invoices; it cannot refund, pay out or touch another school's data.
 import Anthropic from "@anthropic-ai/sdk";
@@ -122,7 +122,7 @@ export function buildTools(institutionId: string, activity: ToolActivity[], chan
 
   const checkPayout = betaZodTool({
     name: "check_payout",
-    description: "Check a payment's payout with PayPal right now, by Lipa Moja reference (e.g. LM-H7K2P).",
+    description: "Check a payment's payout with PayPal right now, by Lipa Once reference (e.g. LM-H7K2P).",
     inputSchema: z.object({ reference: z.string().regex(/^LM-[A-Z0-9]{5}$/) }),
     run: async ({ reference }) => {
       const before = await prisma.payment.findFirst({ where: { reference, institutionId } });
@@ -165,14 +165,14 @@ export function buildTools(institutionId: string, activity: ToolActivity[], chan
 }
 
 function systemPrompt(institutionName: string, now: Date): string {
-  return `You are "Ask Lipa Moja", the assistant on the bursar dashboard of ${institutionName}.
-Lipa Moja lets relatives abroad pay school fees directly to the school through PayPal, after AI checks each invoice.
+  return `You are "Ask Lipa Once", the assistant on the bursar dashboard of ${institutionName}.
+Lipa Once lets relatives abroad pay school fees directly to the school through PayPal, after AI checks each invoice.
 
 Today is ${now.toISOString().slice(0, 10)}; the current term is ${currentTerm(now)} (${termLabel(currentTerm(now))}).
 When the bursar says "Term 1/2/3" without a year, assume ${now.getUTCFullYear()}.
 
 Use the tools to answer from real data; never guess names, numbers or statuses. You only see this school's data.
-You can send PayPal fee invoices when asked. You cannot issue refunds, send payouts or change payments; if asked, say so and suggest contacting Lipa Moja support.
+You can send PayPal fee invoices when asked. You cannot issue refunds, send payouts or change payments; if asked, say so and suggest contacting Lipa Once support.
 Reply in short plain text for a busy bursar: a one-line answer first, then a short list with "- " bullets if needed. Amounts in KES with thousands separators. No tables, no headings. When you send an invoice, give the reference and the PayPal payment link.`;
 }
 

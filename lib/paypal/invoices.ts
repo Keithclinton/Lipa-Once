@@ -77,7 +77,7 @@ export async function createAndSendInvoice(input: InvoiceInput): Promise<Invoice
           unit_amount: usd(input.billUsd),
           unit_of_measure: "AMOUNT",
         },
-        { name: "Lipa Moja service fee", quantity: "1", unit_amount: usd(input.serviceFeeUsd), unit_of_measure: "AMOUNT" },
+        { name: "Lipa Once service fee", quantity: "1", unit_amount: usd(input.serviceFeeUsd), unit_of_measure: "AMOUNT" },
       ],
       configuration: { allow_tip: false, tax_calculated_after_discount: false },
     },

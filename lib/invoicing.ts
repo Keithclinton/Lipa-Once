@@ -74,14 +74,14 @@ export async function sendFeeInvoice(req: InvoiceRequest): Promise<InvoiceResult
   try {
     const invoice = await createAndSendInvoice({
       reference: payment.reference,
-      businessName: `${shortName(inst.name)} via Lipa Moja`,
+      businessName: `${shortName(inst.name)} via Lipa Once`,
       recipientEmail: req.recipientEmail,
       recipientName: req.recipientName,
       itemName: `${student.name} (Adm ${student.admNo}) school fees, ${what}`,
       itemDescription: `${formatKes(schedule.amountKes)} at an indicative KES ${q.fxRate} per US$1. Paid directly to ${inst.name}.`,
       billUsd: q.feeUsd,
       serviceFeeUsd: q.serviceFeeUsd,
-      note: `Lipa Moja ref ${payment.reference}. The full fee goes directly to ${inst.name}'s verified account.`,
+      note: `Lipa Once ref ${payment.reference}. The full fee goes directly to ${inst.name}'s verified account.`,
     });
     await prisma.payment.update({ where: { id: payment.id }, data: { paypalInvoiceId: invoice.id } });
     return {

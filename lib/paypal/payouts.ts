@@ -19,7 +19,7 @@ export async function createPayout(input: PayoutInput): Promise<{ batchId: strin
     body: {
       sender_batch_header: {
         sender_batch_id: input.reference,
-        email_subject: `Lipa Moja payment ${input.reference}`,
+        email_subject: `Lipa Once payment ${input.reference}`,
         email_message: input.note,
       },
       items: [

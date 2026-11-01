@@ -80,7 +80,7 @@ export async function sendPayout(paymentId: string): Promise<void> {
       reference: payment.reference,
       receiver: payment.institution.paypalEmail,
       amountUsd: q.feeUsd,
-      note: `${formatKes(payment.amountKes)} for ${payment.beneficiaryName}${forWhat ? ` (${forWhat})` : ""}. Lipa Moja ref ${payment.reference}.`,
+      note: `${formatKes(payment.amountKes)} for ${payment.beneficiaryName}${forWhat ? ` (${forWhat})` : ""}. Lipa Once ref ${payment.reference}.`,
     });
     await prisma.payment.update({ where: { id: paymentId }, data: { payoutBatchId: batchId } });
   } catch (err) {

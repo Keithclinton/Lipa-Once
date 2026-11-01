@@ -32,14 +32,14 @@ export async function createOrder(input: OrderInput): Promise<string> {
           },
           items: [
             { name: input.description.slice(0, 127), quantity: "1", unit_amount: usd(quote.feeUsd), category: "DIGITAL_GOODS" },
-            { name: "Lipa Moja service fee", quantity: "1", unit_amount: usd(quote.serviceFeeUsd), category: "DIGITAL_GOODS" },
+            { name: "Lipa Once service fee", quantity: "1", unit_amount: usd(quote.serviceFeeUsd), category: "DIGITAL_GOODS" },
           ],
         },
       ],
       payment_source: {
         paypal: {
           experience_context: {
-            brand_name: "Lipa Moja",
+            brand_name: "Lipa Once",
             shipping_preference: "NO_SHIPPING",
             user_action: "PAY_NOW",
             return_url: input.returnUrl,
