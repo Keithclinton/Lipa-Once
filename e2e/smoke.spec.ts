@@ -28,6 +28,12 @@ test("a settled payment has a bilingual receipt", async ({ page }) => {
 test("the bursar dashboard lists payments in AG Grid", async ({ page }) => {
   await page.goto("/institution/mlima-girls-eldoret");
   await expect(page.getByRole("heading", { name: "Mlima Girls National School, Eldoret" })).toBeVisible();
+  // Deployments with DASHBOARD_PASSCODE set show a passcode form first.
+  const unlock = page.getByRole("button", { name: "Open dashboard" });
+  if (await unlock.isVisible()) {
+    await page.getByLabel("Passcode").fill(process.env.E2E_DASHBOARD_PASSCODE ?? "");
+    await unlock.click();
+  }
   const grid = page.getByRole("treegrid").or(page.getByRole("grid"));
   await expect(grid.getByText("Mercy Jepkoech")).toBeVisible();
   await expect(page.locator(".lm-row-block").first()).toBeVisible();
