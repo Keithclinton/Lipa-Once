@@ -45,6 +45,9 @@ services:
         sync: false
       - key: DASHBOARD_PASSCODE
         sync: false
+      # Sandbox business account that receives Mlima Girls' payouts
+      - key: PAYOUT_EMAIL_MLIMA_GIRLS_ELDORET
+        sync: false
 
 databases:
   - name: lipa-moja-db
