@@ -3,7 +3,7 @@ import { z } from "zod/v4";
 import { AiError } from "@/lib/ai/client";
 import type { InvoiceFile } from "@/lib/ai/extract";
 import { createPaymentFromInvoice } from "@/lib/payments";
-import { MAX_UPLOAD_BYTES, SAMPLE_INVOICES, loadSample, sniffType } from "@/lib/uploads";
+import { MAX_UPLOAD_BYTES, SAMPLE_INVOICES, isSampleFile, loadSample, sniffType } from "@/lib/uploads";
 
 export const runtime = "nodejs";
 export const maxDuration = 120;
@@ -68,7 +68,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const payment = await createPaymentFromInvoice(file, sender);
+    const payment = await createPaymentFromInvoice(file, sender, Boolean(sample) || (await isSampleFile(file.data)));
     return NextResponse.json({ id: payment.id, reference: payment.reference, verdict: payment.verdict });
   } catch (err) {
     if (err instanceof AiError) return error(err.userMessage, 502);

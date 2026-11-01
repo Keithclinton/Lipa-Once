@@ -1,4 +1,4 @@
-import { randomUUID } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import type { InvoiceFile } from "./ai/extract";
@@ -37,6 +37,17 @@ export async function saveUpload(file: InvoiceFile): Promise<string> {
   const name = `${randomUUID()}.${EXTENSIONS[file.mediaType]}`;
   await writeFile(path.join(dir, name), file.data);
   return name;
+}
+
+let sampleHashes: Promise<Set<string>> | null = null;
+
+// True if the bytes are exactly one of the bundled sample invoices, e.g. a
+// judge downloaded a sample from /demo and uploaded it on /pay.
+export async function isSampleFile(data: Buffer): Promise<boolean> {
+  sampleHashes ??= Promise.all(SAMPLE_INVOICES.map(loadSample)).then(
+    (files) => new Set(files.map((f) => createHash("sha256").update(f.data).digest("hex"))),
+  );
+  return (await sampleHashes).has(createHash("sha256").update(data).digest("hex"));
 }
 
 export async function loadSample(sample: SampleInvoice): Promise<InvoiceFile> {

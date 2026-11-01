@@ -79,6 +79,9 @@ model Payment {
   receiptEn        String?
   receiptSw        String?
   settledAt        DateTime?
+  // Created from a bundled sample invoice. Ignored by the duplicate check so
+  // every visitor to the shared demo can pay the samples.
+  isDemo           Boolean      @default(false)
   createdAt        DateTime     @default(now())
   updatedAt        DateTime     @updatedAt
 

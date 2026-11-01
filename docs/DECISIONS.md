@@ -27,7 +27,7 @@ Short log of choices not dictated by the original plan.
 
 ## 2026-10-31 — AI review can raise, never lower
 - `lib/ai/explain.ts` adds a short summary and extra concerns. Any concern lifts APPROVE to FLAG; nothing lowers a verdict. If the call fails, the rule findings are shown on their own.
-- Both AI calls use structured outputs (zod) and the server-side refusal fallback (`fallbacks: "default"`).
+- AI calls use structured outputs (zod). The server-side refusal fallback (`fallbacks: "default"`) is sent only to models that support it; Claude Haiku 5.5 has none.
 
 ## 2026-10-31 — "Ask Lipa Moja" uses our own tools, not the PayPal Agent Toolkit
 - The assistant is a Claude tool-runner agent (`lib/ai/assistant.ts`) with five tools, all scoped to the dashboard's institution: `search_payments`, `unpaid_students`, `payment_totals`, `check_payout` (live PayPal Payouts lookup) and `send_fee_invoice` (PayPal Invoicing).
@@ -37,3 +37,10 @@ Short log of choices not dictated by the original plan.
 
 ## 2026-10-31 — Tests use a throwaway SQLite file
 - `vitest.config.ts` points `DATABASE_URL` at `prisma/test.db`, which the global setup deletes and recreates with `prisma db push`. Prisma refuses `--force-reset` when run by an AI agent, and deleting a dedicated test file avoids touching the dev database.
+
+## 2026-11-01 — Sample invoices can be paid by every demo visitor
+- Paying a sample invoice settles that student's term, so on a shared deployment the next visitor would get "already paid". Payments created from a bundled sample (the `/demo` buttons, or an upload byte-identical to a sample) are marked `isDemo`, and the duplicate check ignores demo payments.
+- The seeded `LM-H7K2P` is not a demo payment, so the duplicate sample still blocks.
+
+## 2026-11-01 — Full page navigation after PayPal approval
+- After capture the review page uses `window.location.assign` to open the receipt. `router.push` called from inside the PayPal SDK's `onApprove` callback did not navigate.

@@ -22,7 +22,7 @@ export async function loadVerifyContext(): Promise<VerifyContext> {
       include: { feeSchedules: { select: { level: true, term: true, amountKes: true } } },
     }),
     prisma.payment.findMany({
-      where: { status: "SETTLED" },
+      where: { status: "SETTLED", isDemo: false },
       select: { reference: true, institutionId: true, beneficiaryRef: true, term: true, settledAt: true },
     }),
   ]);
@@ -39,7 +39,7 @@ async function uniqueReference(): Promise<string> {
 
 // Upload -> extract -> rule checks -> AI review -> priced Payment record.
 // Throws AiError (with a user-facing message) if the invoice can't be read.
-export async function createPaymentFromInvoice(file: InvoiceFile, sender: SenderDetails) {
+export async function createPaymentFromInvoice(file: InvoiceFile, sender: SenderDetails, isDemo = false) {
   const [invoiceImagePath, extraction] = await Promise.all([saveUpload(file), extractInvoice(file)]);
 
   const result = verifyExtraction(extraction, await loadVerifyContext());
@@ -65,6 +65,7 @@ export async function createPaymentFromInvoice(file: InvoiceFile, sender: Sender
       extraction: extraction as unknown as Prisma.InputJsonValue,
       invoiceImagePath,
       ...sender,
+      isDemo,
       status: verdict === "BLOCK" ? "BLOCKED" : "VERIFIED",
     },
   });
